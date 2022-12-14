@@ -29,10 +29,9 @@ public class Bob {
         kpg.initialize(1024);
 
         // getting key pairs
-        // using generateKeyPair() method
         KeyPair kp = kpg.genKeyPair();
 
-        // getting public key
+        // getting public key and private key
         PublicKey pub = kp.getPublic();
         PrivateKey prv = kp.getPrivate();
 
@@ -40,31 +39,29 @@ public class Bob {
         byte[] privateKeyBytes = prv.getEncoded();
         this.privateKey = privateKeyBytes;
         this.publicKey = publicKeyBytes;
+
         //write the private and public key to the corresponding files
         Utils.ByteToFile(this.publicKeyFile, publicKeyBytes);
         Utils.ByteToFile(this.privateKeyFile,privateKeyBytes );
 
     }
-    public void decryptMessage ( Key aes_Key) throws Exception {
-        byte[] encryptedMessage = Utils.readToBytes("src/main/resources/transmittedData.txt");
-        myAES aes = new myAES();
-        String decryptedString = aes.decrypt(encryptedMessage, aes_Key);
-        System.out.println("printing out of decrypted message:" + decryptedString);
-    }
+
     public Boolean verifyMac () throws NoSuchAlgorithmException, InvalidKeyException {
         //have
         System.out.println();
-        System.out.println("sharedMac key from BOB: " +
+        System.out.println("Printing the message contents from Bob class to check that it matches with what Alice sent:\n");
+        System.out.println("shared Mac key from BOB: " +
                 Base64.getEncoder().encodeToString( sharedMACkey.getEncoded()));
-        System.out.println("Message from Bob: " +Base64.getEncoder().encodeToString(this.msg) );
-        System.out.println("AES key from Bob: " +Base64.getEncoder().encodeToString(this.aes_enc) );
-        System.out.println("MAC from Bob: " +Base64.getEncoder().encodeToString(this.mac_bytes ));
+        System.out.println("Encrypted Message from Bob: " +Base64.getEncoder().encodeToString(this.msg) );
+        System.out.println("Encrypted AES key from Bob: " +Base64.getEncoder().encodeToString(this.aes_enc) );
+        System.out.println("Encrypted MAC from Bob: " +Base64.getEncoder().encodeToString(this.mac_bytes ));
         byte[] verifyMe = MAC.CreateMac(msg,aes_enc,sharedMACkey);
         return Arrays.equals(verifyMe, mac_bytes);
     }
 
     public byte[] decryptAESkey () throws NoSuchPaddingException, IllegalBlockSizeException, IOException, NoSuchAlgorithmException, InvalidKeySpecException, BadPaddingException, InvalidKeyException {
         byte [] decAES = RSA.decryptAESkey(privateKeyFile,aes_enc);
+        System.out.println();
         System.out.println("AES decrypted from BOB: " +Base64.getEncoder().encodeToString(decAES) );
         return decAES;
     }
@@ -72,13 +69,8 @@ public class Bob {
         byte[] aes_key = decryptAESkey();
         SecretKeySpec secretKeySpec = new SecretKeySpec(aes_key, "AES");
         myAES aes = new myAES();
-        System.out.println("Message decrypted on Bob side:\n" + aes.decrypt(msg, secretKeySpec));
+        System.out.println("\nMessage decrypted on Bob side:\n" + aes.decrypt(msg, secretKeySpec));
     }
-
-
-
-
-
     public byte[] getPrivateKey() {return this.privateKey;}
     public byte[] getPublicKey(){return this.publicKey;}
     public void setSharedMacKey (Key macKey){this.sharedMACkey = macKey;}
@@ -86,6 +78,7 @@ public class Bob {
 
     public void receiveTransmitedData (byte[]msg, byte[] aes_enc, byte[] mac_bytes)
     {
+
         this.msg = msg;
         this.aes_enc = aes_enc;
         this.mac_bytes = mac_bytes;

@@ -11,7 +11,7 @@ import java.util.Scanner;
 
 /***
  *
- * used to create static methods that might be used by both Alice and Bob
+ * used to create helper methods
  */
 public class Utils {
     public static String getMessagesFrom (String fileName) throws FileNotFoundException {

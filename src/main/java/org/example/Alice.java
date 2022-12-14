@@ -12,11 +12,7 @@ import java.util.Base64;
  * be implemented
  */
 public class Alice {
-    /***
-     *
-     * Step 1: generate a private key to  be stored in Alice txt file
-     *
-     */
+
     private byte[] privateKey;
     private byte[] publicKey;
     private String privateKeyFile = "src/main/resources/Alice_private_key.txt";
@@ -26,13 +22,9 @@ public class Alice {
     private String message_alice;
     private SecretKey AES_secret_key;
     private Key sharedMACkey;
-
-
     private byte[] msg;
     private byte[] mac;
     private byte[] en_aes;
-
-
 
 
 
@@ -49,6 +41,7 @@ public class Alice {
 
         // getting public key
         PublicKey pub = kp.getPublic();
+        //getting private key
         PrivateKey prv = kp.getPrivate();
 
         byte[] publicKeyBytes = pub.getEncoded();
@@ -84,49 +77,23 @@ public class Alice {
         this.mac = MAC.CreateMac(msg,en_aes,sharedMACkey);
 
         //Prints for testing purposes
-        System.out.println("Printing  encrypted message from Alice class: "+Base64.getEncoder().encodeToString(msg));
-        System.out.println("Printing  encrypted aes_key from Alice class: "+Base64.getEncoder().encodeToString(en_aes));
-        System.out.println("Printing  encrypted mac from Alice class: "+Base64.getEncoder().encodeToString(mac));
+        System.out.println("Printing encrypted message from Alice class: "+Base64.getEncoder().encodeToString(msg));
+        System.out.println("Printing encrypted aes_key from Alice class: "+Base64.getEncoder().encodeToString(en_aes));
+        System.out.println("Printing encrypted mac from Alice class: "+Base64.getEncoder().encodeToString(mac));
         System.out.println();
 
+        //using setter methods from message info class so that the receiver can read contents
         msgInfo.setLenEncryptedAES(en_aes.length);
         msgInfo.setLengthEncrytedMessage(msg.length);
         msgInfo.setLenMAC(mac.length);
+
         //time to write all the different components to the transmittedData.txt
         Utils.writeFinalByteLoadToFile(pathToTransmit,msg, en_aes,mac);
 
-        //run this line once top is implemented
-        //Utils.ByteToFile( "src/main/resources/transmittedData.txt", encryptedMessage);
-
-
     }
-    /***
-    public void writeToFile (byte[] encryptedMessage) {
-        try {
-            FileWriter writer = new FileWriter("src/main/resources/transmittedData.txt");
-            writer.write(String.valueOf(encryptedMessage));
-            writer.close();
-            System.out.println("Successfully sent encrypted message");
-        }
-        catch (IOException e){
-            System.out.println("An error occured");
-            e.printStackTrace();
-        }
-    }
-     ***/
 
-    //public String generateMAC(String encrypted_message) throws NoSuchAlgorithmException, InvalidKeyException {
-        /***
-         * Generate MAC for message authentication
-         * Remember that Alice and Bob must share message Authentication
-         */
-      //  byte[] message_mac = MAC.CreateMac(encrypted_message);
-        //String message_macString = Base64.getEncoder().encodeToString(message_mac);
-       // System.out.println("MAC for encrypted message: " + message_macString);
 
-        //return message_macString;
-    //}
-
+    //setter and getters some are not used
 
     public byte[] getPrivateKey() {return this.privateKey;}
     public byte[] getPublicKey(){return this.publicKey;}

@@ -24,10 +24,10 @@ public class RSA
 
 
         byte [] publicKey_bytes = Utils.readToBytes(pathToPubKey);
-        System.out.println("Checking Bob's public key from RSA class!: "
-                + Base64.getEncoder().encodeToString(publicKey_bytes));
+        //System.out.println("Checking Bob's public key from RSA class!: "
+                //+ Base64.getEncoder().encodeToString(publicKey_bytes));
 
-        System.out.println("should have printed bob's key!!!");
+        //System.out.println("should have printed bob's key!!!");
         EncodedKeySpec publicKeySpec = new X509EncodedKeySpec(publicKey_bytes);
 
         // creating object of keyfactory
@@ -36,8 +36,6 @@ public class RSA
         // generating Public key from the provided key spec.
         // using generatePublic() method
         PublicKey publicKey = keyFactory.generatePublic(publicKeySpec);
-
-
 
         Cipher cip = Cipher.getInstance("RSA/ECB/PKCS1Padding");
         cip.init(Cipher.ENCRYPT_MODE, publicKey);

@@ -47,45 +47,21 @@ public class Main {
         //Creating  a random key
         Key sharedMACkey = keyGen.generateKey();
 
-        //making an Alice and Bob instance for testing purposes
+        //making an Alice and Bob instance
         Alice theSender = new Alice();
         Bob theReceiver = new Bob();
+
         //setting the MAC key for both users-- assume that they already safely exchanged this prior to this simulation
         theSender.setSharedMacKey(sharedMACkey);
         theReceiver.setSharedMacKey(sharedMACkey);
-        //print the sharedMacKey for Alice
-        System.out.println("sharedMac key from main method: " +
-                Base64.getEncoder().encodeToString(theSender.getSharedMacKey().getEncoded()));
 
-        System.out.println("sharedMac key from main method: " +
-                Base64.getEncoder().encodeToString(theReceiver.getSharedMacKey().getEncoded()));
-        System.out.println();
-
-
-
-
-
-        byte[] alicePublicKey = theSender.getPublicKey();
-        byte[] alicePrivateKey = theSender.getPrivateKey();
-
-        byte[]bobPK = theReceiver.getPublicKey();
-        byte[]bobPrivK = theReceiver.getPrivateKey();
-
-        System.out.println("Alice public key: " + Base64.getEncoder().encodeToString(alicePrivateKey) );
-        System.out.println("Alice private key: " + Base64.getEncoder().encodeToString(alicePublicKey));
-
-        //lets check here if we can make Bob's privK
-        KeyFactory kf = KeyFactory.getInstance("RSA");
-        X509EncodedKeySpec pubKeySpec = new X509EncodedKeySpec(bobPK);
-        System.out.println(pubKeySpec.getFormat());
-        PublicKey pub =  kf.generatePublic(pubKeySpec);
-        //System.out.println("Getting format of Bob's public key"+ pubKeyCheck.getFormat());
-        System.out.println("Bob private key: " + Base64.getEncoder().encodeToString(bobPrivK));
-        System.out.println("Bob public key: " + Base64.getEncoder().encodeToString(bobPK));
-        //MessageInformation so bob can read the file correctly
+        //msgInfo will be used in Alice instance to tell Bob where certain contents start and end
         MessageInfo msgInfo = new MessageInfo();
+
+        //this writes the message from messages.txt to transmittedData.txt
         theSender.encryptMessageAndSend("src/main/resources/messages.txt",msgInfo);
-        // getting the contents of the sent message somehow
+
+        // the transmitted message is put into byte array so that it can be passed BOB
         byte []transmitted_msg = Utils.readToBytes("src/main/resources/transmittedData.txt");
 
         //SecretKey aesKey = theSender.getAES_secret_key();
@@ -96,12 +72,9 @@ public class Main {
 
         splitByteArray(message, aesEncrypted,mac,transmitted_msg);
 
-        //get message from Alice
-        System.out.println("Checking arrays in main:"+ Arrays.equals(theSender.getMsg(), message) );
 
-        System.out.println("Message from main method: " +Base64.getEncoder().encodeToString(message) );
-        System.out.println("AES key from main method: " +Base64.getEncoder().encodeToString(aesEncrypted) );
-        System.out.println("MAC from main method: " +Base64.getEncoder().encodeToString(mac ));
+
+
         System.out.println("Got the contents!");
 
         theReceiver.receiveTransmitedData(message, aesEncrypted, mac);

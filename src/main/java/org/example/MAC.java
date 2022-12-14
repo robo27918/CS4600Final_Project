@@ -7,10 +7,8 @@ import java.security.NoSuchAlgorithmException;
 import java.util.Base64;
 
 public class MAC {
-
     /***
      *
-
      * @return byte
      * @throws NoSuchAlgorithmException
      * @throws InvalidKeyException
@@ -25,14 +23,9 @@ public class MAC {
         mac.update(encryptedAESkey);
         //print the final mac generated to see the contents and use for comparison
         byte[] mac_bytes = mac.doFinal();
-        System.out.println("Printing mac from MAC class: "+  Base64.getEncoder().encodeToString(mac_bytes));
+        //System.out.println("Printing mac from MAC class: "+  Base64.getEncoder().encodeToString(mac_bytes));
         return mac_bytes;
     }
-    /***
-    public static boolean verifyMac (byte[] message, Key sharedKey)
-    {
-        boolean isValid = true;
 
-    }***/
 
 }
