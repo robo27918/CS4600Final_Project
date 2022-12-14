@@ -55,9 +55,10 @@ public class Alice {
 
 
 
-    public void encryptMessageAndSend(String fileName, MessageInfo msgInfo) throws Exception {
+    public void encryptMessageAndSendAll(String fileName, MessageInfo msgInfo) throws Exception {
         /**
-         * fileName is the placeholder for the file we should be reading messages from
+         *  this method reads the contents from messages.txt and then sends the encrypted message as well as the
+         *  AES key wrapped with Bob's RSA public key and the mac
          */
         // (1) get the message (s) from the file message.txt
         String message = Utils.getMessagesFrom(fileName);

@@ -16,6 +16,7 @@ public class Bob {
     private byte[] publicKey;
     private String privateKeyFile = "src/main/resources/Bob_private_key.txt";
     private String publicKeyFile = "src/main/resources/bob_public_key.txt";
+    private String transmittedData = "src/main/resources/transmittedData.txt";
     private Key sharedMACkey;
     private byte[] msg;
     private byte[] aes_enc;
@@ -49,7 +50,7 @@ public class Bob {
     public Boolean verifyMac () throws NoSuchAlgorithmException, InvalidKeyException {
         //have
         System.out.println();
-        System.out.println("Printing the message contents from Bob class to check that it matches with what Alice sent:\n");
+        System.out.println("Printing the encrypted message contents and MAC from Bob class to check that it matches with what Alice sent:\n");
         System.out.println("shared Mac key from BOB: " +
                 Base64.getEncoder().encodeToString( sharedMACkey.getEncoded()));
         System.out.println("Encrypted Message from Bob: " +Base64.getEncoder().encodeToString(this.msg) );
@@ -62,7 +63,7 @@ public class Bob {
     public byte[] decryptAESkey () throws NoSuchPaddingException, IllegalBlockSizeException, IOException, NoSuchAlgorithmException, InvalidKeySpecException, BadPaddingException, InvalidKeyException {
         byte [] decAES = RSA.decryptAESkey(privateKeyFile,aes_enc);
         System.out.println();
-        System.out.println("AES decrypted from BOB: " +Base64.getEncoder().encodeToString(decAES) );
+        System.out.println("AES decrypted from Bob: " +Base64.getEncoder().encodeToString(decAES) );
         return decAES;
     }
     public void decryptMessage() throws Exception {
@@ -76,11 +77,24 @@ public class Bob {
     public void setSharedMacKey (Key macKey){this.sharedMACkey = macKey;}
     public Key getSharedMacKey(){ return this.sharedMACkey; }
 
-    public void receiveTransmitedData (byte[]msg, byte[] aes_enc, byte[] mac_bytes)
-    {
+    public void receiveTransmittedData (MessageInfo msgInfo) throws IOException {
+        byte[] transmittedBytes = Utils.readToBytes(transmittedData);
+        this.msg = new byte[msgInfo.getLengthEncrytedMessage()];
+        this.aes_enc = new byte[msgInfo.getLenEncryptedAES()];
+        this.mac_bytes = new byte[msgInfo.getLenMAC()];
 
-        this.msg = msg;
-        this.aes_enc = aes_enc;
-        this.mac_bytes = mac_bytes;
+        splitByteArray(msg, aes_enc, mac_bytes, transmittedBytes);
+
+    }
+
+    public void splitByteArray(byte[] message, byte[] aesEncrypted, byte[] mac ,byte[] input) {
+
+        System.arraycopy(input, 0, message, 0, message.length);
+        System.arraycopy(input, message.length, aesEncrypted, 0, aesEncrypted.length);
+        System.arraycopy(input, message.length + aesEncrypted.length, mac, 0, mac.length);
+
+
+
+
     }
 }

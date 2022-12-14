@@ -59,37 +59,12 @@ public class Main {
         MessageInfo msgInfo = new MessageInfo();
 
         //this writes the message from messages.txt to transmittedData.txt
-        theSender.encryptMessageAndSend("src/main/resources/messages.txt",msgInfo);
-
-        // the transmitted message is put into byte array so that it can be passed BOB
-        byte []transmitted_msg = Utils.readToBytes("src/main/resources/transmittedData.txt");
-
-        //SecretKey aesKey = theSender.getAES_secret_key();
-        //System.out.println("AES key printed in main:"+aesKey);
-        byte[] message = new byte[msgInfo.getLengthEncrytedMessage()];
-        byte[] aesEncrypted = new byte[msgInfo.getLenEncryptedAES()];
-        byte[] mac = new byte[msgInfo.getLenMAC()];
-
-        splitByteArray(message, aesEncrypted,mac,transmitted_msg);
+        theSender.encryptMessageAndSendAll("src/main/resources/messages.txt",msgInfo);
 
 
-
-
-        System.out.println("Got the contents!");
-
-        theReceiver.receiveTransmitedData(message, aesEncrypted, mac);
+        theReceiver.receiveTransmittedData(msgInfo);
         System.out.println("verifying mac in Main with Bob verify method:"+ theReceiver.verifyMac());
-        theReceiver.decryptAESkey();
         theReceiver.decryptMessage();
     }
-    public static void splitByteArray(byte[] message, byte[] aesEncrypted, byte[] mac ,byte[] input) {
 
-        System.arraycopy(input, 0, message, 0, message.length);
-        System.arraycopy(input, message.length, aesEncrypted, 0, aesEncrypted.length);
-        System.arraycopy(input, message.length + aesEncrypted.length, mac, 0, mac.length);
-        //print Mac to see if it is correct
-
-
-
-    }
 }
